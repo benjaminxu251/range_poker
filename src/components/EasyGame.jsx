@@ -61,7 +61,7 @@ function HandDisplay({ cards, title, faceDown = false, highlightCards = null, ha
               className={`${isHighlighted ? 'ring-2 ring-amber-400 rounded-lg' : ''} ${shouldAnimate ? 'animate-deal-to-player' : ''}`}
             >
               {card ? (
-                <Card card={card} faceDown={faceDown} flipped={!faceDown} />
+                <Card card={card} faceDown={faceDown} />
               ) : (
                 <CardPlaceholder />
               )}
@@ -91,7 +91,7 @@ function DealerHandDisplay({ cards, faceDown, bestHandCards, handStrength = null
               key={i}
               className={`${isHighlighted ? 'ring-2 ring-amber-400 rounded-lg' : 'opacity-60'} ${shouldAnimate ? 'animate-deal-to-dealer' : ''}`}
             >
-              <Card card={card} faceDown={faceDown} flipped={!faceDown} size="small" />
+              <Card card={card} faceDown={faceDown} size="small" />
             </div>
           )
         })}
@@ -107,23 +107,13 @@ function DealerHandDisplay({ cards, faceDown, bestHandCards, handStrength = null
 }
 
 function CurrentCardDisplay({ card, animating }) {
-  const [flipped, setFlipped] = useState(false)
-  const cardKey = card ? `${card.rank}-${card.suit}` : null
-
-  useEffect(() => {
-    if (!card) return
-    setFlipped(false)
-    const timer = setTimeout(() => setFlipped(true), 150)
-    return () => clearTimeout(timer)
-  }, [cardKey])
-
   if (!card) return null
 
   return (
     <div className="flex flex-col items-center gap-3">
       <h3 className="text-xl font-serif text-amber-100">Current Card</h3>
-      <div className={animating ? 'animate-deal' : ''} key={cardKey}>
-        <Card card={card} size="large" flipped={flipped} />
+      <div className={animating ? 'animate-deal' : ''} key={`${card.rank}-${card.suit}`}>
+        <Card card={card} size="large" />
       </div>
     </div>
   )
