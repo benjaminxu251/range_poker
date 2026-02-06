@@ -163,7 +163,17 @@ function RangeSelector({ selectedCards, onSelectionChange, usedCards }) {
   )
 }
 
-function DealingDisplay({ revealedCards, currentCard, matchedCard, animatingIndex }) {
+function DealingDisplay({ revealedCards, currentCard, matchedCard }) {
+  const [flipped, setFlipped] = useState(false)
+  const cardKey = currentCard ? `${currentCard.rank}-${currentCard.suit}` : null
+
+  useEffect(() => {
+    if (!currentCard) return
+    setFlipped(false)
+    const timer = setTimeout(() => setFlipped(true), 100)
+    return () => clearTimeout(timer)
+  }, [cardKey])
+
   return (
     <div className="flex flex-col items-center gap-3">
       <h3 className="text-lg font-serif text-slate-300">Dealing...</h3>
@@ -171,19 +181,19 @@ function DealingDisplay({ revealedCards, currentCard, matchedCard, animatingInde
         {revealedCards.map((card, i) => (
           <div
             key={i}
-            className={`opacity-50 ${i === animatingIndex ? 'animate-deal' : ''}`}
+            className="opacity-50"
           >
-            <Card card={card} size="small" />
+            <Card card={card} size="small" flipped />
           </div>
         ))}
         {currentCard && !matchedCard && (
           <div className="animate-deal">
-            <Card card={currentCard} size="small" />
+            <Card card={currentCard} size="small" flipped={flipped} />
           </div>
         )}
         {matchedCard && (
           <div className="ring-2 ring-emerald-400 rounded-lg animate-deal">
-            <Card card={matchedCard} size="small" />
+            <Card card={matchedCard} size="small" flipped />
           </div>
         )}
       </div>
@@ -209,7 +219,7 @@ function HandDisplay({ cards, title, highlightCards = null, handStrength = null,
               key={i}
               className={`${isHighlighted ? 'ring-2 ring-amber-400 rounded-lg' : ''} ${shouldAnimate ? 'animate-deal-to-player' : ''}`}
             >
-              {card ? <Card card={card} /> : <CardPlaceholder />}
+              {card ? <Card card={card} flipped /> : <CardPlaceholder />}
             </div>
           )
         })}
@@ -236,7 +246,7 @@ function DealerHandDisplay({ cards, bestHandCards, handStrength = null, animateI
               key={i}
               className={`${isHighlighted ? 'ring-2 ring-amber-400 rounded-lg' : 'opacity-60'} ${shouldAnimate ? 'animate-deal-to-dealer' : ''}`}
             >
-              <Card card={card} size="small" />
+              <Card card={card} size="small" flipped />
             </div>
           )
         })}
@@ -282,7 +292,6 @@ export function HardGame({ onNavigate, backScreen }) {
   const [revealedCards, setRevealedCards] = useState([])
   const [currentDealCard, setCurrentDealCard] = useState(null)
   const [matchedCard, setMatchedCard] = useState(null)
-  const [dealAnimatingIndex, setDealAnimatingIndex] = useState(-1)
 
   const [playerAnimateIndex, setPlayerAnimateIndex] = useState(-1)
   const [dealerAnimateIndex, setDealerAnimateIndex] = useState(-1)
@@ -371,8 +380,6 @@ export function HardGame({ onNavigate, backScreen }) {
         setTimeout(() => {
           setRevealedCards(prev => [...prev, nextCard])
           setCurrentDealCard(null)
-          setDealAnimatingIndex(revealedCount)
-          setTimeout(() => setDealAnimatingIndex(-1), 300)
           dealing.revealedCount++
         }, 150)
       }, DEAL_DELAY)
@@ -601,7 +608,6 @@ export function HardGame({ onNavigate, backScreen }) {
             revealedCards={revealedCards}
             currentCard={currentDealCard}
             matchedCard={matchedCard}
-            animatingIndex={dealAnimatingIndex}
           />
         )}
 
