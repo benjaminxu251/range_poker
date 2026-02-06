@@ -1,17 +1,16 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { createDeck } from '../utils/deck.js'
-import { findBestHand, compareHands, evaluatePartialHand } from '../utils/handEvaluator.js'
 import { playCardSound } from '../utils/sound.js'
-import { Card, CardPlaceholder } from './Card.jsx'
+import { Card } from './Card.jsx'
 import { Hint, HintWrapper } from './Hint.jsx'
+import {
+  PLAYER_HAND_SIZE, DEALER_HAND_SIZE,
+  getHandStrength, computeShowdownResult,
+  GameButton, HandDisplay, DealerHandDisplay, ShowdownResult,
+} from './GameShared.jsx'
 
 const NUX_STORAGE_KEY = 'easyNuxStep'
 const NUX_COMPLETE = -1
-
-function getHandStrength(cards) {
-  if (cards.length === 0) return null
-  return evaluatePartialHand(cards)
-}
 
 const GAME_PHASES = {
   DRAFTING: 'drafting',
@@ -19,124 +18,16 @@ const GAME_PHASES = {
   SHOWDOWN: 'showdown',
 }
 
-const PLAYER_HAND_SIZE = 5
-const DEALER_HAND_SIZE = 8
 const DEAL_DELAY = 200
 
-function GameButton({ children, onClick, variant = 'primary', disabled = false }) {
-  const baseClasses = 'py-3 px-6 text-lg font-serif rounded-lg transition-all duration-200 border-2'
-  const variants = {
-    primary: 'bg-emerald-700 hover:bg-emerald-600 border-emerald-500 text-amber-100 hover:scale-105',
-    secondary: 'bg-amber-700 hover:bg-amber-600 border-amber-500 text-amber-100 hover:scale-105',
-    back: 'bg-slate-700 hover:bg-slate-600 border-slate-500 text-slate-200 hover:scale-105',
-  }
-  const disabledClasses = 'opacity-50 cursor-not-allowed hover:scale-100'
-
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`${baseClasses} ${variants[variant]} ${disabled ? disabledClasses : ''}`}
-    >
-      {children}
-    </button>
-  )
-}
-
-function HandDisplay({ cards, title, faceDown = false, highlightCards = null, handStrength = null, animateIndex = -1 }) {
-  const placeholders = Array(5).fill(null)
-
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <h3 className="text-lg font-serif text-slate-300">{title}</h3>
-      <div className="flex gap-1 sm:gap-2">
-        {placeholders.map((_, i) => {
-          const card = cards[i]
-          const isHighlighted = highlightCards && card && highlightCards.some(
-            h => h.rank === card.rank && h.suit === card.suit
-          )
-          const shouldAnimate = i === animateIndex
-          return (
-            <div
-              key={i}
-              className={`${isHighlighted ? 'ring-2 ring-amber-400 rounded-lg' : ''} ${shouldAnimate ? 'animate-deal-to-player' : ''}`}
-            >
-              {card ? (
-                <Card card={card} faceDown={faceDown} />
-              ) : (
-                <CardPlaceholder />
-              )}
-            </div>
-          )
-        })}
-      </div>
-      {handStrength && (
-        <p className="text-amber-200 text-sm font-serif">{handStrength}</p>
-      )}
-    </div>
-  )
-}
-
-function DealerHandDisplay({ cards, faceDown, bestHandCards, handStrength = null, animateIndex = -1 }) {
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <h3 className="text-lg font-serif text-slate-300">Dealer's Hand ({cards.length}/{DEALER_HAND_SIZE})</h3>
-      <div className="flex gap-1 flex-wrap justify-center max-w-[280px] sm:max-w-xs min-h-[2.5rem]">
-        {cards.map((card, i) => {
-          const isHighlighted = !faceDown && bestHandCards && bestHandCards.some(
-            h => h.rank === card.rank && h.suit === card.suit
-          )
-          const shouldAnimate = i === animateIndex
-          return (
-            <div
-              key={i}
-              className={`${isHighlighted ? 'ring-2 ring-amber-400 rounded-lg' : 'opacity-60'} ${shouldAnimate ? 'animate-deal-to-dealer' : ''}`}
-            >
-              <Card card={card} faceDown={faceDown} size="small" />
-            </div>
-          )
-        })}
-      </div>
-      {handStrength && (
-        <p className="text-amber-200 text-sm font-serif">{handStrength}</p>
-      )}
-      {!handStrength && cards.length > 0 && cards.length < 5 && (
-        <p className="text-slate-500 text-sm">({cards.length} cards)</p>
-      )}
-    </div>
-  )
-}
-
-function CurrentCardDisplay({ card, animating }) {
+function CurrentCardDisplay({ card }) {
   if (!card) return null
 
   return (
     <div className="flex flex-col items-center gap-3">
       <h3 className="text-xl font-serif text-amber-100">Current Card</h3>
-      <div className={animating ? 'animate-deal' : ''} key={`${card.rank}-${card.suit}`}>
+      <div className="animate-deal" key={`${card.rank}-${card.suit}`}>
         <Card card={card} size="large" />
-      </div>
-    </div>
-  )
-}
-
-function ShowdownResult({ playerEval, dealerEval, winner }) {
-  const resultText = winner === 'player' ? 'You Win!' : winner === 'dealer' ? 'Dealer Wins' : 'Tie'
-  const resultColor = winner === 'player' ? 'text-emerald-400' : winner === 'dealer' ? 'text-red-400' : 'text-amber-400'
-
-  return (
-    <div className="flex flex-col items-center gap-4 p-4 sm:p-6 bg-slate-800/50 rounded-xl border border-slate-600 animate-deal">
-      <h2 className={`text-3xl font-serif ${resultColor}`}>{resultText}</h2>
-      <div className="flex gap-4 sm:gap-8 text-center">
-        <div>
-          <p className="text-slate-400 text-sm">Your Hand</p>
-          <p className="text-amber-100 text-lg font-serif">{playerEval.name}</p>
-        </div>
-        <div className="border-l border-slate-600" />
-        <div>
-          <p className="text-slate-400 text-sm">Dealer's Hand</p>
-          <p className="text-amber-100 text-lg font-serif">{dealerEval.name}</p>
-        </div>
       </div>
     </div>
   )
@@ -152,7 +43,6 @@ export function EasyGame({ onNavigate, backScreen }) {
 
   const [playerAnimateIndex, setPlayerAnimateIndex] = useState(-1)
   const [dealerAnimateIndex, setDealerAnimateIndex] = useState(-1)
-  const [cardAnimating, setCardAnimating] = useState(true)
 
   const showdownDataRef = useRef(null)
 
@@ -170,7 +60,6 @@ export function EasyGame({ onNavigate, backScreen }) {
     }
   }, [nuxStep])
 
-  // Track if user has taken or passed for NUX progression
   const hasTakenRef = useRef(false)
   const hasPassedRef = useRef(false)
 
@@ -188,11 +77,9 @@ export function EasyGame({ onNavigate, backScreen }) {
     setPlayerAnimateIndex(playerHand.length)
     setPlayerHand(prev => [...prev, currentCard])
     setDeckIndex(prev => prev + 1)
-    setCardAnimating(true)
 
     setTimeout(() => setPlayerAnimateIndex(-1), 400)
 
-    // NUX: After first take, show player hand hint
     if (!hasTakenRef.current && nuxStep === 0) {
       hasTakenRef.current = true
       setTimeout(() => advanceNux(1), 500)
@@ -206,11 +93,9 @@ export function EasyGame({ onNavigate, backScreen }) {
     setDealerAnimateIndex(dealerHand.length)
     setDealerHand(prev => [...prev, currentCard])
     setDeckIndex(prev => prev + 1)
-    setCardAnimating(true)
 
     setTimeout(() => setDealerAnimateIndex(-1), 400)
 
-    // NUX: After first pass, show dealer hand hint
     if (!hasPassedRef.current && (nuxStep === 0 || nuxStep === 1)) {
       hasPassedRef.current = true
       setTimeout(() => advanceNux(2), 500)
@@ -221,24 +106,17 @@ export function EasyGame({ onNavigate, backScreen }) {
 
   const handleShowdown = useCallback(() => {
     const cardsNeeded = DEALER_HAND_SIZE - dealerHand.length
-    const cardsToAdd = []
-    let idx = deckIndex
-
-    for (let i = 0; i < cardsNeeded && idx < deck.length; i++) {
-      cardsToAdd.push(deck[idx])
-      idx++
-    }
+    const cardsToAdd = deck.slice(deckIndex, deckIndex + cardsNeeded)
 
     showdownDataRef.current = {
       cardsToAdd,
-      finalDeckIndex: idx,
+      finalDeckIndex: deckIndex + cardsToAdd.length,
       startDealerCount: dealerHand.length,
     }
 
     setPhase(GAME_PHASES.DEALING_SHOWDOWN)
   }, [dealerHand.length, deckIndex, deck])
 
-  // Handle showdown dealing animation
   useEffect(() => {
     if (phase !== GAME_PHASES.DEALING_SHOWDOWN || !showdownDataRef.current) return
 
@@ -255,24 +133,8 @@ export function EasyGame({ onNavigate, backScreen }) {
       }, DEAL_DELAY)
       return () => clearTimeout(timer)
     } else {
-      // All cards dealt, show result
       setDeckIndex(finalDeckIndex)
-
-      const finalDealerHand = [...dealerHand]
-      const playerBest = findBestHand(playerHand)
-      const dealerBest = findBestHand(finalDealerHand)
-
-      const comparison = compareHands(playerBest.evaluation, dealerBest.evaluation)
-      const winner = comparison > 0 ? 'player' : comparison < 0 ? 'dealer' : 'tie'
-
-      setShowdownResult({
-        playerEval: playerBest.evaluation,
-        dealerEval: dealerBest.evaluation,
-        playerBestCards: playerBest.cards,
-        dealerBestCards: dealerBest.cards,
-        winner,
-      })
-
+      setShowdownResult(computeShowdownResult(playerHand, dealerHand))
       setPhase(GAME_PHASES.SHOWDOWN)
       showdownDataRef.current = null
     }
@@ -288,7 +150,6 @@ export function EasyGame({ onNavigate, backScreen }) {
     setShowdownResult(null)
     setPlayerAnimateIndex(-1)
     setDealerAnimateIndex(-1)
-    setCardAnimating(true)
   }, [])
 
   return (
@@ -300,7 +161,6 @@ export function EasyGame({ onNavigate, backScreen }) {
         <div className="relative">
           <DealerHandDisplay
             cards={dealerHand}
-            faceDown={false}
             bestHandCards={showdownResult?.dealerBestCards}
             handStrength={dealerHandStrength}
             animateIndex={dealerAnimateIndex}
@@ -319,7 +179,7 @@ export function EasyGame({ onNavigate, backScreen }) {
       <div className="min-h-28 sm:min-h-40 flex items-center justify-center">
         {isDrafting && currentCard && (
           <HintWrapper show={nuxStep === 0} pulse>
-            <CurrentCardDisplay card={currentCard} animating={cardAnimating} />
+            <CurrentCardDisplay card={currentCard} />
             <Hint
               show={nuxStep === 0}
               position="bottom"
