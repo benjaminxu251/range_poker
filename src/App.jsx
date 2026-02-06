@@ -256,7 +256,6 @@ function MuteButton({ muted, onClick }) {
 }
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState(SCREENS.MAIN_MENU)
   const [displayedScreen, setDisplayedScreen] = useState(SCREENS.MAIN_MENU)
   const [transitionState, setTransitionState] = useState('idle') // 'idle' | 'exiting' | 'entering'
   const [muted, setMuted] = useState(() => localStorage.getItem('muted') === 'true')
@@ -299,7 +298,6 @@ function App() {
   const navigateTo = (screen) => {
     if (screen === displayedScreen || transitionState !== 'idle') return
 
-    setCurrentScreen(screen)
     setTransitionState('exiting')
 
     // After exit animation, swap screens and enter

@@ -154,6 +154,12 @@ export function compareHands(eval1, eval2) {
   return 0
 }
 
+const VALUE_NAMES = { 14: 'A', 13: 'K', 12: 'Q', 11: 'J', 10: '10', 9: '9', 8: '8', 7: '7', 6: '6', 5: '5', 4: '4', 3: '3', 2: '2' }
+
+function rankName(v) {
+  return VALUE_NAMES[v] || v
+}
+
 // Evaluate a partial hand (1-4 cards) - returns best made hand description
 export function evaluatePartialHand(cards) {
   if (cards.length === 0) return null
@@ -169,11 +175,6 @@ export function evaluatePartialHand(cards) {
   const counts = Object.entries(rankCounts)
     .map(([v, c]) => ({ value: parseInt(v), count: c }))
     .sort((a, b) => b.count - a.count || b.value - a.value)
-
-  const rankName = (v) => {
-    const names = { 14: 'A', 13: 'K', 12: 'Q', 11: 'J', 10: '10', 9: '9', 8: '8', 7: '7', 6: '6', 5: '5', 4: '4', 3: '3', 2: '2' }
-    return names[v] || v
-  }
 
   // Four of a kind
   if (counts[0].count === 4) {
