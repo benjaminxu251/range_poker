@@ -377,7 +377,10 @@ export function HardGame({ onNavigate, backScreen }) {
         }, 150)
       }, DEAL_DELAY)
       return () => clearTimeout(timer)
-    } else if (matched && !dealing.processed) {
+    } else if (dealing.processed) {
+      // Already processed, wait for cleanup
+      return
+    } else if (matched) {
       dealing.processed = true
       // Show matched card
       const timer = setTimeout(() => {
@@ -407,6 +410,7 @@ export function HardGame({ onNavigate, backScreen }) {
       return () => clearTimeout(timer)
     } else {
       // No match - deck exhausted
+      dealing.processed = true
       const timer = setTimeout(() => {
         setDealerHand(prev => [...prev, ...cardsToReveal])
         setDeckIndex(finalDeckIndex)
