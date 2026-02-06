@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+html {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+body {
+  overscroll-behavior: none;
+}
+button {
+  touch-action: manipulation;
+}
+
 @theme {
   --font-serif: 'Georgia', 'Times New Roman', serif;
   --animate-deal: deal 0.3s ease-out forwards;
