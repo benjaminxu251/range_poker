@@ -426,8 +426,35 @@ export function HardGame({ onNavigate, backScreen }) {
   }, [phase, revealedCards, playerHand.length, dealerHand.length])
 
   const playerNeedsCards = playerHand.length < PLAYER_HAND_SIZE
+  const cardsPlayerNeeds = PLAYER_HAND_SIZE - playerHand.length
+  const remainingDeck = deck.length - deckIndex
   const canDeal = selectedCards.size > 0 && playerNeedsCards && deckIndex < deck.length
   const draftingComplete = playerHand.length === PLAYER_HAND_SIZE
+
+  // Auto-complete player hand and go to showdown if deck is too small to continue
+  useEffect(() => {
+    if (phase !== GAME_PHASES.SELECTING || !playerNeedsCards) return
+    if (remainingDeck > cardsPlayerNeeds) return
+
+    // Give player remaining deck cards (up to what they need)
+    const playerCardsToAdd = deck.slice(deckIndex, deckIndex + Math.min(remainingDeck, cardsPlayerNeeds))
+    const newDeckIndex = deckIndex + playerCardsToAdd.length
+
+    // Calculate dealer cards for showdown
+    const dealerCardsNeeded = DEALER_HAND_SIZE - dealerHand.length
+    const dealerCardsToAdd = deck.slice(newDeckIndex, newDeckIndex + dealerCardsNeeded)
+
+    // Set up showdown
+    showdownDataRef.current = {
+      cardsToAdd: dealerCardsToAdd,
+      finalDeckIndex: newDeckIndex + dealerCardsToAdd.length,
+      startDealerCount: dealerHand.length,
+    }
+
+    setPlayerHand(prev => [...prev, ...playerCardsToAdd])
+    setDeckIndex(newDeckIndex + dealerCardsToAdd.length)
+    setPhase(GAME_PHASES.DEALING_SHOWDOWN)
+  }, [phase, playerNeedsCards, remainingDeck, cardsPlayerNeeds, deck, deckIndex, dealerHand.length])
 
   const handleShowdown = useCallback(() => {
     const cardsNeeded = DEALER_HAND_SIZE - dealerHand.length
