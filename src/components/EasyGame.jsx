@@ -49,7 +49,7 @@ function HandDisplay({ cards, title, faceDown = false, highlightCards = null, ha
   return (
     <div className="flex flex-col items-center gap-2">
       <h3 className="text-lg font-serif text-slate-300">{title}</h3>
-      <div className="flex gap-2">
+      <div className="flex gap-1 sm:gap-2">
         {placeholders.map((_, i) => {
           const card = cards[i]
           const isHighlighted = highlightCards && card && highlightCards.some(
@@ -81,7 +81,7 @@ function DealerHandDisplay({ cards, faceDown, bestHandCards, handStrength = null
   return (
     <div className="flex flex-col items-center gap-2">
       <h3 className="text-lg font-serif text-slate-300">Dealer's Hand ({cards.length}/{DEALER_HAND_SIZE})</h3>
-      <div className="flex gap-1 flex-wrap justify-center max-w-xs min-h-[2.5rem]">
+      <div className="flex gap-1 flex-wrap justify-center max-w-[280px] sm:max-w-xs min-h-[2.5rem]">
         {cards.map((card, i) => {
           const isHighlighted = !faceDown && bestHandCards && bestHandCards.some(
             h => h.rank === card.rank && h.suit === card.suit
@@ -125,9 +125,9 @@ function ShowdownResult({ playerEval, dealerEval, winner }) {
   const resultColor = winner === 'player' ? 'text-emerald-400' : winner === 'dealer' ? 'text-red-400' : 'text-amber-400'
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6 bg-slate-800/50 rounded-xl border border-slate-600 animate-deal">
+    <div className="flex flex-col items-center gap-4 p-4 sm:p-6 bg-slate-800/50 rounded-xl border border-slate-600 animate-deal">
       <h2 className={`text-3xl font-serif ${resultColor}`}>{resultText}</h2>
-      <div className="flex gap-8 text-center">
+      <div className="flex gap-4 sm:gap-8 text-center">
         <div>
           <p className="text-slate-400 text-sm">Your Hand</p>
           <p className="text-amber-100 text-lg font-serif">{playerEval.name}</p>
@@ -292,8 +292,8 @@ export function EasyGame({ onNavigate, backScreen }) {
   }, [])
 
   return (
-    <div className="flex flex-col items-center gap-6 p-4 min-h-screen">
-      <h1 className="text-3xl font-serif text-amber-100">Easy Mode</h1>
+    <div className="flex flex-col items-center gap-3 sm:gap-6 p-3 sm:p-4">
+      <h1 className="text-2xl sm:text-3xl font-serif text-amber-100">Easy Mode</h1>
 
       {/* Dealer's Hand */}
       <HintWrapper show={nuxStep === 2} pulse>
@@ -316,7 +316,7 @@ export function EasyGame({ onNavigate, backScreen }) {
       </HintWrapper>
 
       {/* Current Card / Showdown Result */}
-      <div className="min-h-40 flex items-center justify-center">
+      <div className="min-h-28 sm:min-h-40 flex items-center justify-center">
         {isDrafting && currentCard && (
           <HintWrapper show={nuxStep === 0} pulse>
             <CurrentCardDisplay card={currentCard} animating={cardAnimating} />
@@ -409,7 +409,7 @@ export function EasyGame({ onNavigate, backScreen }) {
       </div>
 
       {/* Back Button */}
-      <div className="mt-4">
+      <div className="mt-2 sm:mt-4">
         <GameButton onClick={() => onNavigate(backScreen)} variant="back">
           Back to Menu
         </GameButton>

@@ -19,7 +19,7 @@ const SCREENS = {
 }
 
 function MenuButton({ children, onClick, variant = 'primary' }) {
-  const baseClasses = 'w-64 py-4 px-8 text-xl font-serif rounded-lg transition-all duration-200 ease-out border-2'
+  const baseClasses = 'w-56 sm:w-64 py-4 px-8 text-xl font-serif rounded-lg transition-all duration-200 ease-out border-2'
   const variants = {
     primary: 'bg-emerald-800 hover:bg-emerald-700 border-emerald-600 hover:border-emerald-400 text-amber-100 hover:scale-105 hover:shadow-lg hover:shadow-emerald-900/50',
     secondary: 'bg-slate-700 hover:bg-slate-600 border-slate-500 hover:border-slate-400 text-slate-200 hover:scale-105',
@@ -39,7 +39,7 @@ function MenuButton({ children, onClick, variant = 'primary' }) {
 function MainMenu({ onNavigate, onShowRules }) {
   return (
     <div className="flex flex-col items-center gap-5">
-      <h1 className="text-5xl font-serif text-amber-100 mb-8 tracking-wide">
+      <h1 className="text-4xl sm:text-5xl font-serif text-amber-100 mb-8 tracking-wide">
         Range Poker
       </h1>
       <MenuButton onClick={() => onNavigate(SCREENS.MODE_SELECT)}>
@@ -61,7 +61,7 @@ function MainMenu({ onNavigate, onShowRules }) {
 function ModeSelect({ onNavigate }) {
   return (
     <div className="flex flex-col items-center gap-5">
-      <h1 className="text-4xl font-serif text-amber-100 mb-8 tracking-wide">
+      <h1 className="text-3xl sm:text-4xl font-serif text-amber-100 mb-8 tracking-wide">
         Select Mode
       </h1>
       <MenuButton onClick={() => onNavigate(SCREENS.EASY_GAME)}>
@@ -81,7 +81,7 @@ function ModeSelect({ onNavigate }) {
 
 function VolumeSlider({ label, value, onChange }) {
   return (
-    <div className="flex items-center gap-4 w-64">
+    <div className="flex items-center gap-4 w-56 sm:w-64">
       <span className="text-slate-300 w-20 text-sm">{label}</span>
       <input
         type="range"
@@ -129,7 +129,7 @@ function Settings({ onNavigate, onVolumeChange }) {
 
   return (
     <div className="flex flex-col items-center gap-5">
-      <h1 className="text-4xl font-serif text-amber-100 mb-8">Settings</h1>
+      <h1 className="text-3xl sm:text-4xl font-serif text-amber-100 mb-8">Settings</h1>
 
       <div className="flex flex-col gap-3 bg-slate-800/50 p-4 rounded-xl border border-slate-600">
         <h2 className="text-lg font-serif text-amber-200 mb-2">Volume</h2>
@@ -157,7 +157,7 @@ function Settings({ onNavigate, onVolumeChange }) {
 function Credits({ onNavigate }) {
   return (
     <div className="flex flex-col items-center gap-5">
-      <h1 className="text-4xl font-serif text-amber-100 mb-8">Credits</h1>
+      <h1 className="text-3xl sm:text-4xl font-serif text-amber-100 mb-8">Credits</h1>
       <p className="text-slate-400 text-lg mb-8">Credits coming soon...</p>
       <MenuButton onClick={() => onNavigate(SCREENS.MAIN_MENU)} variant="back">
         Back
@@ -170,10 +170,10 @@ function RulesDialog({ onClose }) {
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div
-        className="bg-slate-800 border-2 border-slate-600 rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-6 animate-deal"
+        className="bg-slate-800 border-2 border-slate-600 rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-4 sm:p-6 animate-deal"
         onClick={e => e.stopPropagation()}
       >
-        <h2 className="text-3xl font-serif text-amber-100 mb-6 text-center">How to Play</h2>
+        <h2 className="text-2xl sm:text-3xl font-serif text-amber-100 mb-6 text-center">How to Play</h2>
 
         <div className="space-y-6 text-slate-300">
           <div>
@@ -337,7 +337,7 @@ function App() {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 flex items-center justify-center"
+      className="min-h-dvh bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 flex items-center justify-center"
       onClick={startAudio}
     >
       <MuteButton muted={muted} onClick={() => setMuted(m => !m)} />

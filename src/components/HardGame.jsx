@@ -98,49 +98,51 @@ function RangeSelector({ selectedCards, onSelectionChange, usedCards }) {
   const clearAll = () => onSelectionChange(new Set())
 
   return (
-    <div className="flex flex-col gap-2 p-3 bg-slate-800/50 rounded-xl border border-slate-600">
-      <div className="flex gap-0.5 ml-10">
-        {RANKS.map(rank => (
-          <button
-            key={rank}
-            onClick={() => toggleRank(rank)}
-            className="w-7 h-6 text-xs font-bold text-slate-400 hover:text-amber-200 hover:bg-slate-700 rounded transition-colors"
-          >
-            {rank}
-          </button>
+    <div className="flex flex-col gap-2 p-1.5 sm:p-3 bg-slate-800/50 rounded-xl border border-slate-600">
+      <div className="overflow-x-auto">
+        <div className="flex gap-0.5 ml-6 sm:ml-10">
+          {RANKS.map(rank => (
+            <button
+              key={rank}
+              onClick={() => toggleRank(rank)}
+              className="w-6 h-5 sm:w-7 sm:h-6 text-[10px] sm:text-xs font-bold text-slate-400 hover:text-amber-200 hover:bg-slate-700 rounded transition-colors"
+            >
+              {rank}
+            </button>
+          ))}
+        </div>
+
+        {SUITS.map(suit => (
+          <div key={suit} className="flex gap-0.5 items-center">
+            <button
+              onClick={() => toggleSuit(suit)}
+              className={`w-6 h-7 sm:w-9 sm:h-8 text-base sm:text-lg rounded hover:bg-slate-700 transition-colors shrink-0 ${SUIT_COLORS[suit]}`}
+            >
+              {SUIT_SYMBOLS[suit]}
+            </button>
+            {RANKS.map(rank => {
+              const used = isUsed(rank, suit)
+              const selected = isSelected(rank, suit)
+              return (
+                <button
+                  key={`${rank}-${suit}`}
+                  onClick={() => toggleCard(rank, suit)}
+                  disabled={used}
+                  className={`w-6 h-7 sm:w-7 sm:h-8 text-[10px] sm:text-xs font-bold rounded border transition-all ${
+                    used
+                      ? 'bg-slate-900 border-slate-800 text-slate-700 cursor-not-allowed'
+                      : selected
+                        ? 'bg-amber-600 border-amber-400 text-white'
+                        : 'bg-slate-700 border-slate-600 text-slate-400 hover:border-slate-400'
+                  }`}
+                >
+                  {rank}
+                </button>
+              )
+            })}
+          </div>
         ))}
       </div>
-
-      {SUITS.map(suit => (
-        <div key={suit} className="flex gap-0.5 items-center">
-          <button
-            onClick={() => toggleSuit(suit)}
-            className={`w-9 h-8 text-lg rounded hover:bg-slate-700 transition-colors ${SUIT_COLORS[suit]}`}
-          >
-            {SUIT_SYMBOLS[suit]}
-          </button>
-          {RANKS.map(rank => {
-            const used = isUsed(rank, suit)
-            const selected = isSelected(rank, suit)
-            return (
-              <button
-                key={`${rank}-${suit}`}
-                onClick={() => toggleCard(rank, suit)}
-                disabled={used}
-                className={`w-7 h-8 text-xs font-bold rounded border transition-all ${
-                  used
-                    ? 'bg-slate-900 border-slate-800 text-slate-700 cursor-not-allowed'
-                    : selected
-                      ? 'bg-amber-600 border-amber-400 text-white'
-                      : 'bg-slate-700 border-slate-600 text-slate-400 hover:border-slate-400'
-                }`}
-              >
-                {rank}
-              </button>
-            )
-          })}
-        </div>
-      ))}
 
       <div className="flex justify-between items-center mt-1">
         <button
@@ -198,7 +200,7 @@ function HandDisplay({ cards, title, highlightCards = null, handStrength = null,
   return (
     <div className="flex flex-col items-center gap-2">
       <h3 className="text-lg font-serif text-slate-300">{title}</h3>
-      <div className="flex gap-2">
+      <div className="flex gap-1 sm:gap-2">
         {placeholders.map((_, i) => {
           const card = cards[i]
           const isHighlighted = highlightCards && card && highlightCards.some(
@@ -226,7 +228,7 @@ function DealerHandDisplay({ cards, bestHandCards, handStrength = null, animateI
   return (
     <div className="flex flex-col items-center gap-2">
       <h3 className="text-lg font-serif text-slate-300">Dealer's Hand ({cards.length}/{DEALER_HAND_SIZE})</h3>
-      <div className="flex gap-1 flex-wrap justify-center max-w-xs min-h-[2.5rem]">
+      <div className="flex gap-1 flex-wrap justify-center max-w-[280px] sm:max-w-xs min-h-[2.5rem]">
         {cards.map((card, i) => {
           const isHighlighted = bestHandCards && bestHandCards.some(
             h => h.rank === card.rank && h.suit === card.suit
@@ -254,9 +256,9 @@ function ShowdownResult({ playerEval, dealerEval, winner }) {
   const resultColor = winner === 'player' ? 'text-emerald-400' : winner === 'dealer' ? 'text-red-400' : 'text-amber-400'
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6 bg-slate-800/50 rounded-xl border border-slate-600 animate-deal">
+    <div className="flex flex-col items-center gap-4 p-4 sm:p-6 bg-slate-800/50 rounded-xl border border-slate-600 animate-deal">
       <h2 className={`text-3xl font-serif ${resultColor}`}>{resultText}</h2>
-      <div className="flex gap-8 text-center">
+      <div className="flex gap-4 sm:gap-8 text-center">
         <div>
           <p className="text-slate-400 text-sm">Your Hand</p>
           <p className="text-amber-100 text-lg font-serif">{playerEval.name}</p>
@@ -530,8 +532,8 @@ export function HardGame({ onNavigate, backScreen }) {
   }, [])
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4 min-h-screen">
-      <h1 className="text-3xl font-serif text-amber-100">Hard Mode</h1>
+    <div className="flex flex-col items-center gap-3 sm:gap-4 p-3 sm:p-4">
+      <h1 className="text-2xl sm:text-3xl font-serif text-amber-100">Hard Mode</h1>
 
       <DealerHandDisplay
         cards={dealerHand}
@@ -540,7 +542,7 @@ export function HardGame({ onNavigate, backScreen }) {
         animateIndex={dealerAnimateIndex}
       />
 
-      <div className="min-h-48 flex items-center justify-center">
+      <div className="min-h-32 sm:min-h-48 flex items-center justify-center">
         {phase === GAME_PHASES.SELECTING && !draftingComplete && (
           <div className="flex flex-col items-center gap-4">
             <p className="text-amber-100 text-lg">Select cards to stop on:</p>
@@ -559,7 +561,7 @@ export function HardGame({ onNavigate, backScreen }) {
                 />
                 <Hint
                   show={nuxStep === 0}
-                  position="right"
+                  position="bottom"
                   onDismiss={() => advanceNux(NUX_COMPLETE)}
                 >
                   Select which cards you want. Cards deal until one matches.
