@@ -208,7 +208,7 @@ function App() {
   const [currentScreen, setCurrentScreen] = useState(SCREENS.MAIN_MENU)
   const [displayedScreen, setDisplayedScreen] = useState(SCREENS.MAIN_MENU)
   const [transitionState, setTransitionState] = useState('idle') // 'idle' | 'exiting' | 'entering'
-  const [muted, setMuted] = useState(false)
+  const [muted, setMuted] = useState(() => localStorage.getItem('muted') === 'true')
   const [audioStarted, setAudioStarted] = useState(false)
   const [showRules, setShowRules] = useState(false)
   const audioRef = useRef(null)
@@ -229,6 +229,7 @@ function App() {
     if (audioRef.current) {
       audioRef.current.muted = muted
     }
+    localStorage.setItem('muted', muted.toString())
   }, [muted])
 
   const startAudio = () => {
