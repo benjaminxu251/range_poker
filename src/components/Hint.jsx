@@ -37,7 +37,7 @@ export function Hint({ show, position = 'bottom', children, onDismiss, pulse = f
         onDismiss?.()
       }}
     >
-      <div className="relative bg-slate-900/95 border border-amber-500 rounded-lg px-4 py-2 min-w-48 max-w-sm shadow-lg">
+      <div className="relative bg-slate-900/95 border border-amber-500 rounded-lg px-4 py-2 min-w-40 sm:min-w-48 max-w-[min(24rem,80vw)] shadow-lg">
         <p className="text-amber-100 text-sm whitespace-normal">{children}</p>
         <button
           onClick={(e) => {
