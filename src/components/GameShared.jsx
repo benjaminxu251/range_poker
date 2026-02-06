@@ -13,7 +13,7 @@ export function computeShowdownResult(playerHand, dealerHand) {
   const playerBest = findBestHand(playerHand)
   const dealerBest = findBestHand(dealerHand)
   const comparison = compareHands(playerBest.evaluation, dealerBest.evaluation)
-  const winner = comparison > 0 ? 'player' : comparison < 0 ? 'dealer' : 'tie'
+  const winner = comparison > 0 ? 'player' : 'dealer'
   return {
     playerEval: playerBest.evaluation,
     dealerEval: dealerBest.evaluation,
@@ -109,8 +109,8 @@ export function DealerHandDisplay({ cards, faceDown = false, bestHandCards, hand
 }
 
 export function ShowdownResult({ playerEval, dealerEval, winner }) {
-  const resultText = winner === 'player' ? 'You Win!' : winner === 'dealer' ? 'Dealer Wins' : 'Tie'
-  const resultColor = winner === 'player' ? 'text-emerald-400' : winner === 'dealer' ? 'text-red-400' : 'text-amber-400'
+  const resultText = winner === 'player' ? 'You Win!' : 'Dealer Wins'
+  const resultColor = winner === 'player' ? 'text-emerald-400' : 'text-red-400'
 
   return (
     <div className="flex flex-col items-center gap-4 p-4 sm:p-6 bg-slate-800/50 rounded-xl border border-slate-600 animate-deal">

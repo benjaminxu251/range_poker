@@ -178,7 +178,7 @@ function RulesDialog({ onClose }) {
         <div className="space-y-6 text-slate-300">
           <div>
             <h3 className="text-xl font-serif text-emerald-400 mb-2">Goal</h3>
-            <p>Build the best 5-card poker hand to beat the dealer.</p>
+            <p>Build a stronger 5-card poker hand than the dealer. Ties go to the dealer.</p>
           </div>
 
           <div>

@@ -17,6 +17,7 @@ Range Poker is a single-player card drafting game where the player competes agai
 5. **Showdown**: Compare best 5-card poker hand from each player's cards
    - Player uses their 5 cards
    - Dealer selects best 5 from their 8 cards
+   - Player must have the stronger hand to win; equal hands = dealer wins
 
 ### Hard Mode
 
@@ -26,7 +27,7 @@ Range Poker is a single-player card drafting game where the player competes agai
 2. **Dealer Deals**: Cards dealt from deck one at a time until a card matches the stopping condition
 3. **Distribution**: Player takes the matching card; dealer takes all cards dealt before it
 4. **Repeat** steps 1-3 until player has 5 cards
-5. **Showdown**: Same as Easy Mode - best 5-card hands compared
+5. **Showdown**: Same as Easy Mode - player must have a stronger hand to win
 
 #### Stopping Condition UX
 
