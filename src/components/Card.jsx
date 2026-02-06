@@ -1,6 +1,7 @@
+import { memo } from 'react'
 import { SUIT_SYMBOLS, SUIT_COLORS } from '../utils/deck.js'
 
-export function Card({ card, faceDown = false, size = 'normal' }) {
+export const Card = memo(function Card({ card, faceDown = false, size = 'normal' }) {
   const sizeClasses = {
     small: 'w-12 h-18 text-sm',
     normal: 'w-16 h-24 text-lg',
@@ -26,7 +27,7 @@ export function Card({ card, faceDown = false, size = 'normal' }) {
       <div className={`${colorClass} text-2xl leading-none`}>{suitSymbol}</div>
     </div>
   )
-}
+})
 
 export function CardPlaceholder({ size = 'normal' }) {
   const sizeClasses = {
