@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { createDeck, RANKS, SUITS, SUIT_SYMBOLS, SUIT_COLORS } from '../utils/deck.js'
 import { findBestHand, compareHands, evaluatePartialHand } from '../utils/handEvaluator.js'
+import { playCardSound } from '../utils/sound.js'
 import { Card, CardPlaceholder } from './Card.jsx'
 import { Hint, HintWrapper } from './Hint.jsx'
 
@@ -365,6 +366,7 @@ export function HardGame({ onNavigate, backScreen }) {
     if (revealedCount < cardsToReveal.length) {
       // Reveal next card to dealer
       const timer = setTimeout(() => {
+        playCardSound()
         const nextCard = cardsToReveal[revealedCount]
         setCurrentDealCard(nextCard)
 
@@ -484,6 +486,7 @@ export function HardGame({ onNavigate, backScreen }) {
 
     if (currentAddedCount < cardsToAdd.length) {
       const timer = setTimeout(() => {
+        playCardSound()
         const nextCard = cardsToAdd[currentAddedCount]
         setDealerAnimateIndex(dealerHand.length)
         setDealerHand(prev => [...prev, nextCard])

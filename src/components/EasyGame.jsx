@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { createDeck } from '../utils/deck.js'
 import { findBestHand, compareHands, evaluatePartialHand } from '../utils/handEvaluator.js'
+import { playCardSound } from '../utils/sound.js'
 import { Card, CardPlaceholder } from './Card.jsx'
 import { Hint, HintWrapper } from './Hint.jsx'
 
@@ -183,6 +184,7 @@ export function EasyGame({ onNavigate, backScreen }) {
   const handleTake = useCallback(() => {
     if (!currentCard || !playerNeedsCards) return
 
+    playCardSound()
     setPlayerAnimateIndex(playerHand.length)
     setPlayerHand(prev => [...prev, currentCard])
     setDeckIndex(prev => prev + 1)
@@ -200,6 +202,7 @@ export function EasyGame({ onNavigate, backScreen }) {
   const handlePass = useCallback(() => {
     if (!currentCard) return
 
+    playCardSound()
     setDealerAnimateIndex(dealerHand.length)
     setDealerHand(prev => [...prev, currentCard])
     setDeckIndex(prev => prev + 1)
@@ -244,6 +247,7 @@ export function EasyGame({ onNavigate, backScreen }) {
 
     if (currentAddedCount < cardsToAdd.length) {
       const timer = setTimeout(() => {
+        playCardSound()
         const nextCard = cardsToAdd[currentAddedCount]
         setDealerAnimateIndex(dealerHand.length)
         setDealerHand(prev => [...prev, nextCard])

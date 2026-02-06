@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { EasyGame } from './components/EasyGame.jsx'
 import { HardGame } from './components/HardGame.jsx'
+import {
+  getMasterVolume, setMasterVolume,
+  getMusicVolume, setMusicVolume,
+  getEffectsVolume, setEffectsVolume,
+  getEffectiveVolume, playCardSound
+} from './utils/sound.js'
 import balatroTheme from './assets/audio/balatro_theme.mp3'
 
 const SCREENS = {
@@ -73,8 +79,28 @@ function ModeSelect({ onNavigate }) {
   )
 }
 
-function Settings({ onNavigate }) {
+function VolumeSlider({ label, value, onChange }) {
+  return (
+    <div className="flex items-center gap-4 w-64">
+      <span className="text-slate-300 w-20 text-sm">{label}</span>
+      <input
+        type="range"
+        min="0"
+        max="100"
+        value={Math.round(value * 100)}
+        onChange={(e) => onChange(parseInt(e.target.value) / 100)}
+        className="flex-1 accent-amber-500"
+      />
+      <span className="text-slate-400 w-8 text-sm text-right">{Math.round(value * 100)}%</span>
+    </div>
+  )
+}
+
+function Settings({ onNavigate, onVolumeChange }) {
   const [tutorialsReset, setTutorialsReset] = useState(false)
+  const [master, setMaster] = useState(getMasterVolume)
+  const [music, setMusic] = useState(getMusicVolume)
+  const [effects, setEffects] = useState(getEffectsVolume)
 
   const handleResetTutorials = () => {
     localStorage.removeItem('easyNuxStep')
@@ -83,11 +109,36 @@ function Settings({ onNavigate }) {
     setTimeout(() => setTutorialsReset(false), 2000)
   }
 
+  const handleMasterChange = (v) => {
+    setMaster(v)
+    setMasterVolume(v)
+    onVolumeChange?.()
+  }
+
+  const handleMusicChange = (v) => {
+    setMusic(v)
+    setMusicVolume(v)
+    onVolumeChange?.()
+  }
+
+  const handleEffectsChange = (v) => {
+    setEffects(v)
+    setEffectsVolume(v)
+    playCardSound()
+  }
+
   return (
     <div className="flex flex-col items-center gap-5">
       <h1 className="text-4xl font-serif text-amber-100 mb-8">Settings</h1>
 
-      <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-col gap-3 bg-slate-800/50 p-4 rounded-xl border border-slate-600">
+        <h2 className="text-lg font-serif text-amber-200 mb-2">Volume</h2>
+        <VolumeSlider label="Master" value={master} onChange={handleMasterChange} />
+        <VolumeSlider label="Music" value={music} onChange={handleMusicChange} />
+        <VolumeSlider label="Effects" value={effects} onChange={handleEffectsChange} />
+      </div>
+
+      <div className="flex flex-col items-center gap-3 mt-4">
         <MenuButton onClick={handleResetTutorials} variant="secondary">
           {tutorialsReset ? 'Tutorials Reset!' : 'Reset Tutorials'}
         </MenuButton>
@@ -216,7 +267,7 @@ function App() {
   useEffect(() => {
     const audio = new Audio(balatroTheme)
     audio.loop = true
-    audio.volume = 0.3
+    audio.volume = getEffectiveVolume('music')
     audioRef.current = audio
 
     return () => {
@@ -224,6 +275,12 @@ function App() {
       audio.src = ''
     }
   }, [])
+
+  const updateMusicVolume = () => {
+    if (audioRef.current) {
+      audioRef.current.volume = getEffectiveVolume('music')
+    }
+  }
 
   useEffect(() => {
     if (audioRef.current) {
@@ -264,7 +321,7 @@ function App() {
       case SCREENS.MODE_SELECT:
         return <ModeSelect onNavigate={navigateTo} />
       case SCREENS.SETTINGS:
-        return <Settings onNavigate={navigateTo} />
+        return <Settings onNavigate={navigateTo} onVolumeChange={updateMusicVolume} />
       case SCREENS.CREDITS:
         return <Credits onNavigate={navigateTo} />
       case SCREENS.EASY_GAME:
