@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git -C C:/Users/hyper/Projects/web_apps/range_poker remote -v)",
+      "Bash(gh api:*)",
+      "Bash(where:*)"
     ]
   }
 }

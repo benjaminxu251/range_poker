@@ -377,7 +377,8 @@ export function HardGame({ onNavigate, backScreen }) {
         }, 150)
       }, DEAL_DELAY)
       return () => clearTimeout(timer)
-    } else if (matched) {
+    } else if (matched && !dealing.processed) {
+      dealing.processed = true
       // Show matched card
       const timer = setTimeout(() => {
         setMatchedCard(matched)
