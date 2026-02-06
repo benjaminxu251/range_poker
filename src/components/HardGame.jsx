@@ -164,7 +164,7 @@ function RangeSelector({ selectedCards, onSelectionChange, usedCards }) {
   )
 }
 
-function DealingDisplay({ revealedCards, currentCard, matchedCard, animatingIndex }) {
+function DealingDisplay({ revealedCards, currentCard, matchedCard }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <h3 className="text-lg font-serif text-slate-300">Dealing...</h3>
@@ -172,7 +172,7 @@ function DealingDisplay({ revealedCards, currentCard, matchedCard, animatingInde
         {revealedCards.map((card, i) => (
           <div
             key={i}
-            className={`opacity-50 ${i === animatingIndex ? 'animate-deal' : ''}`}
+            className="opacity-50"
           >
             <Card card={card} size="small" />
           </div>
@@ -283,7 +283,6 @@ export function HardGame({ onNavigate, backScreen }) {
   const [revealedCards, setRevealedCards] = useState([])
   const [currentDealCard, setCurrentDealCard] = useState(null)
   const [matchedCard, setMatchedCard] = useState(null)
-  const [dealAnimatingIndex, setDealAnimatingIndex] = useState(-1)
 
   const [playerAnimateIndex, setPlayerAnimateIndex] = useState(-1)
   const [dealerAnimateIndex, setDealerAnimateIndex] = useState(-1)
@@ -373,8 +372,6 @@ export function HardGame({ onNavigate, backScreen }) {
         setTimeout(() => {
           setRevealedCards(prev => [...prev, nextCard])
           setCurrentDealCard(null)
-          setDealAnimatingIndex(revealedCount)
-          setTimeout(() => setDealAnimatingIndex(-1), 300)
           dealing.revealedCount++
         }, 150)
       }, DEAL_DELAY)
@@ -604,7 +601,6 @@ export function HardGame({ onNavigate, backScreen }) {
             revealedCards={revealedCards}
             currentCard={currentDealCard}
             matchedCard={matchedCard}
-            animatingIndex={dealAnimatingIndex}
           />
         )}
 
